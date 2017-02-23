@@ -2,7 +2,7 @@ from __future__ import print_function
 import os
 import numpy as np
 import keras
-np.random.seed(217)
+np.random.seed(1360)
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils.np_utils import to_categorical
@@ -23,6 +23,15 @@ VALIDATION_SPLIT = 0.2
 # to their embedding vector
 
 # print('Indexing word vectors.')
+
+#compute the overlap close words of same word in different embeddings 
+def Score_similarity(ref_1,ref_2):
+    score = 0
+    for word in ref_1.keys():
+        for close_word in ref_1[word]:
+            if close_word in ref_2[word]:
+                score = score + 1
+    return score
 
 embeddings_index = {}
 f = open(os.path.join(GLOVE_DIR, 'full_v3.txt'))
@@ -90,24 +99,29 @@ reference = [word_rank[i] for i in idx]
 count = 0
 reference_matrix = {}
 for word in reference:
-    reference_matrix[word] = embeddings_index[word]
+    try:
+        reference_matrix[word] = embeddings_index[word]
+    except:
+        continue
 
 #find the most close 10 word for every reference word
 close_word = {}
-distance = 0
+
 for word in reference:
     dist = {}
     for key, val in embeddings_index.iteritems():
-        dist[key] = 1 - spatial.distance.cosine(val,reference_matrix[word])
-        distance = distance + dist[key]
+        try:
+            dist[key] = 1 - spatial.distance.cosine(val,reference_matrix[word])
+        except:
+            continue
     dist = sorted(dist,key = dist.__getitem__,reverse = True)
     ans = [key for key in dist]
-    close_word[word] = ans[0:20]
-print(close_word)
+    close_word[word] = ans[1:200]
+
+final_ans = []
 for path in os.listdir(GLOVE_DIR + '25MB'):
     embeddings_index_ = {}
     f = open(os.path.join(GLOVE_DIR + '25MB/', path))
-    print (path)
     count = 0
     for line in f:
         if count == 0:
@@ -121,14 +135,45 @@ for path in os.listdir(GLOVE_DIR + '25MB'):
         except:
             continue
     f.close()
-    distance = 0
     close_word_ = {}
     for word in reference:
         dist = {}
         for key, val in embeddings_index_.iteritems():
-            dist[key] = 1 - spatial.distance.cosine(val,reference_matrix[word])
-            distance = distance + dist[key]
+            try:
+                dist[key] = 1 - spatial.distance.cosine(val,embeddings_index_[word])
+            except:
+                continue
         dist = sorted(dist,key = dist.__getitem__,reverse = True)
         ans = [key for key in dist]
-        close_word_[word] = ans[0:20]
-    print(close_word_)
+        close_word_[word] = ans[1:200]
+    final_ans.append(path)
+    final_ans.append(Score_similarity(close_word,close_word_))
+print(final_ans)
+# for path in os.listdir(GLOVE_DIR + '25MB'):
+#     embeddings_index_ = {}
+#     f = open(os.path.join(GLOVE_DIR + '25MB/', path))
+#     print (path)
+#     count = 0
+#     for line in f:
+#         if count == 0:
+#             count = count + 1
+#             continue
+#         values = line.split()
+#         word = values[0]
+#         try:
+#             coefs = np.asarray(values[1:], dtype='float32')
+#             embeddings_index_[word] = coefs
+#         except:
+#             continue
+#     f.close()
+#     distance = 0
+#     close_word_ = {}
+#     for word in reference:
+#         dist = {}
+#         for key, val in embeddings_index_.iteritems():
+#             dist[key] = 1 - spatial.distance.cosine(val,reference_matrix[word])
+#             distance = distance + dist[key]
+#         dist = sorted(dist,key = dist.__getitem__,reverse = True)
+#         ans = [key for key in dist]
+#         close_word_[word] = ans[0:20]
+#     print(close_word_)
