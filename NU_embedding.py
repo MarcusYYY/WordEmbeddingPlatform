@@ -1,13 +1,16 @@
 import pandas as pd
-import urllib,urllib2,requests
+import urllib,urllib2,requests,numpy
 
 class embedding:
 	embedding_list = pd.read_csv('https://query.data.world/s/5beqg3omp2z0mtyxnv6tvx5ek')
 	embedding_names = embedding_list['embedding_name']
 	embedding_sizes = embedding_list['vocabulary size']
 	embedding_dimensions = embedding_list['dimension']
-	print 'All embeddings currently avaliable.'
-	print embedding_names.values
+	if len(embedding_list):
+		print 'These are all embeddings currently avaliable.'
+		print embedding_names.values
+	else:
+		print "No embeddings are avaliable now."
 
 	def __init__(self,name,dimension):
 		self.name = name
@@ -25,6 +28,7 @@ class embedding:
 		else:
 			print 'The embedding you are looking for does not exist'
 		self.url = url
+		self.size = embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0]
 
 	def download(self):
 		url = self.url
@@ -33,7 +37,6 @@ class embedding:
 			response = urllib2.urlopen(url)
 			zipcontent = response.read()
 			name = url.split('/')[-1]
-			print name
 			with open(name,'w') as f:
 				f.write(zipcontent)
 		else:
@@ -41,5 +44,5 @@ class embedding:
 			with open(self.name + '.txt','w') as f:
 				f.write(r.content)
 
-
 A = embedding('NYT_Art',100)
+A.download()
