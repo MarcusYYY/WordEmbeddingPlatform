@@ -1,6 +1,8 @@
 import pandas as pd
-import urllib,urllib2,requests,numpy,sys,os,zipfile
+import urllib,urllib2,requests,numpy,sys,os,zipfile,gensim,string,collections,re,nltk
 from scipy import spatial
+from gensim.models import Word2Vec
+from nltk.tokenize import sent_tokenize,word_tokenize
 
 def report(count, blockSize, totalSize):
 	percent = float(count*blockSize*100/totalSize)
@@ -157,9 +159,35 @@ class embedding:
 				return ans[1:num_closeWord]
 			except:
 				print "The word you are referring to doesn't exist in the embedding."
+	
+	# embedding selection of overlap method		
+	def vocabSelect(file_dir, emb_dir):
+	    with open(file_dir) as f:
+	        input_txt = []
+	        sentences = sent_tokenize(f.read())
+	        for s in sentences:
+	            tokens = word_tokenize(s)
+	            input_txt = input_txt + tokens
+	        inp_vocab = set(input_txt)
+	        inp_vsize = (len(inp_vocab))
+	    f.close()
+
+	    for root_1, dir_1, files in os.walk(emb_dir):
+	        for fname in files:
+	            filepath = (os.path.join(emb_dir, fname))
+	            model = Word2Vec.load_word2vec_format(filepath, binary=False)
+	            emb_vocab = set(model.vocab.keys())
+	            int_count = float(len(set.intersection(inp_vocab, emb_vocab)))
+	            percent_inp = int_count/inp_vsize
+	            percent_emb = int_count/(len(emb_vocab))
+
+	            print (fname)
+	            print ("Overlapping Vocab: ", int_count)
+	            print ("Percent of Input Vocab in Emb: ", percent_inp)
+	            print ("Percent of Emb Vocab in Inp: ", percent_emb)
 
 A = embedding('NYT_Movies',100,'2016Spring/')
-embed = A.download()
-data,seed = A.CloseWord_test(10,10,10)
-print data,seed
-print A.CloseWord_reference('would')
+# embed = A.download()
+# data,seed = A.CloseWord_test(10,10,10)
+# print data,seed
+# print A.CloseWord_reference('would')
