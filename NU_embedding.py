@@ -39,7 +39,7 @@ class embedding:
 					print "But the dimension you asked for does not exist."
 					self.flag = False
 		else:
-			print 'The embedding you are looking for does not exist'
+			print 'The embedding you are looking for does not exist.'
 			self.flag = False
 		self.url = url
 		self.size = int(embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0])
@@ -48,9 +48,9 @@ class embedding:
 		self.destination = None
 		self.vector = None
 		self.embed = None
+
 	# download the embeddings in the broker file on data.world and save them 
 	# on the local files.
-
 	def download(self):
 		if self.flag:
 			url = self.url
@@ -58,14 +58,18 @@ class embedding:
 			path = self.path
 			if form == 'zip':
 				name = url.split('/')[-1]
-				self.destination = path + name
+				if not os.path.exists(path):
+					os.makedirs(path)
 				urllib.urlretrieve(url,path + name,reporthook = report)
-				print 'The embedding directory is %s .' % self.destination
+				self.destination = path + name + '.zip'
+				print 'The embedding path is %s .' % self.destination
 			else:
 				file = pd.read_table(url)
-				file.to_csv(path + self.name + '.txt',header = None, index = None ,mode = 'a',)
+				if not os.path.exists(path):
+					os.makedirs(path)
+				file.to_csv(path + self.name + '.txt',header = None, index = None ,mode = 'a')
 				self.destination = path + self.name + '.txt'
-				print 'The embedding directory is %s .' % self.destination
+				print 'The embedding path is %s .' % self.destination
 			self.dl = True
 		else:
 			print "You can't download the embedding because errors happened."
@@ -111,8 +115,8 @@ class embedding:
 			return word_vector
 		else:
 			print "The embedding you asked for has not been successfully downloaded. "
-	# pick up any number of reference words and find any number of close words in the current embedding
 	
+	# pick up any number of reference words and find any number of close words in the current embedding
 	def CloseWord_test(self,num_refer = 10,num_closeWord = 10,iter_times = 10,seed = numpy.random.randint(1000)):
 		numpy.random.seed(seed)
 		if self.dl:
@@ -121,14 +125,14 @@ class embedding:
 			refer_matrix = {}
 			for word in vocab:
 				try:
-					refer_matrix[word] = embed[word]
+					refer_matrix[word] = self.vector[word]
 				except:
 					continue
 			#find the most close num_closeWord words for every reference word
 			close_word = {}
 			for word in vocab:
 				dist = {}
-				for key,val in embed.iteritems():
+				for key,val in self.vector.iteritems():
 					try:
 						dist[key] = 1 - spatial.distance.cosine(val,refer_matrix[word])
 					except:
@@ -139,8 +143,23 @@ class embedding:
 			return close_word,seed
 		else:
 			print 'The embedding has not been downloaded yet.'
-A = embedding('NYT_Art',100,'2016Spring/')
+
+	# specify a reference word and check its close words
+	def CloseWord_reference(self,word,num_closeWord = 10):
+		if self.dl:
+			try:
+				dist = {}
+				reference = self.vector[word]
+				for key,val in self.vector.iteritems():
+					dist[key] = 1 - spatial.distance.cosine(val,reference)
+				dist = sorted(dist,key = dist.__getitem__,reverse = True)
+				ans = [key for key in dist]
+				return ans[1:num_closeWord]
+			except:
+				print "The word you are referring to doesn't exist in the embedding."
+
+A = embedding('NYT_Movies',100,'2016Spring/')
 embed = A.download()
 data,seed = A.CloseWord_test(10,10,10)
 print data,seed
-
+print A.CloseWord_reference('would')
