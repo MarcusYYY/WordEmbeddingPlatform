@@ -1,5 +1,5 @@
 import pandas as pd
-import urllib,urllib2,requests,numpy,sys,os,zipfile,gensim,string,collections,re,nltk
+import urllib,urllib2,requests,numpy,sys,os,zipfile,gensim,string,collections,re,nltk,requests
 from scipy import spatial
 from gensim.models import Word2Vec
 from nltk.tokenize import sent_tokenize,word_tokenize
@@ -44,7 +44,18 @@ class embedding:
 			print 'The embedding you are looking for does not exist.'
 			self.flag = False
 		self.url = url
-		self.size = int(embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0])
+		try:
+			self.size = int(embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0])
+		except:
+			if embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0][-1] == 'K':
+				num = embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0][:-1]
+				num = int(num) * 1000
+				embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0] = num
+			else:
+				num = embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0][:-1]
+				num = int(num) * 1000000
+				embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0] = num
+
 		self.path = path
 		self.dl = False
 		self.destination = None
@@ -58,19 +69,25 @@ class embedding:
 			url = self.url
 			form = url.split('.')[-1]
 			path = self.path
+			print url
 			if form == 'zip':
 				name = url.split('/')[-1]
 				if not os.path.exists(path):
 					os.makedirs(path)
+				print url
 				urllib.urlretrieve(url,path + name,reporthook = report)
 				self.destination = path + name + '.zip'
 				print 'The embedding path is %s .' % self.destination
 			else:
-				file = pd.read_table(url)
+				
 				if not os.path.exists(path):
 					os.makedirs(path)
-				file.to_csv(path + self.name + '.txt',header = None, index = None ,mode = 'a')
+				r = requests.get(url,stream = True)
 				self.destination = path + self.name + '.txt'
+				with open(self.destination,'wb') as f:
+					for chunk in r.iter_content(chunk_size = 1024):
+						if chunk:
+							f.write(chunk)
 				print 'The embedding path is %s .' % self.destination
 			self.dl = True
 		else:
@@ -180,14 +197,13 @@ class embedding:
 	            int_count = float(len(set.intersection(inp_vocab, emb_vocab)))
 	            percent_inp = int_count/inp_vsize
 	            percent_emb = int_count/(len(emb_vocab))
-
 	            print (fname)
 	            print ("Overlapping Vocab: ", int_count)
 	            print ("Percent of Input Vocab in Emb: ", percent_inp)
 	            print ("Percent of Emb Vocab in Inp: ", percent_emb)
 
-A = embedding('NYT_Movies',100,'2016Spring/')
-# embed = A.download()
+A = embedding('NYT_Weather_Environment_Energy',100,'2016Spring/')
+embed = A.download()
 # data,seed = A.CloseWord_test(10,10,10)
 # print data,seed
 # print A.CloseWord_reference('would')
