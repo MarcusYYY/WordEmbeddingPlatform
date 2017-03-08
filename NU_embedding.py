@@ -16,7 +16,7 @@ class embedding:
 	embedding_names = embedding_list['embedding_name']
 	embedding_sizes = embedding_list['vocabulary size']
 	embedding_dimensions = embedding_list['dimension']
-	print embedding_list['url'][4]
+	embedding_score = 0
 	if len(embedding_list):
 		print 'Embeddings now avaliable.'
 		print embedding_list
@@ -177,33 +177,33 @@ class embedding:
 			except:
 				print "The word you are referring to doesn't exist in the embedding."
 	
-	# embedding selection of overlap method		
-	def vocabSelect(file_dir, emb_dir):
-	    with open(file_dir) as f:
-	        input_txt = []
-	        sentences = sent_tokenize(f.read())
-	        for s in sentences:
-	            tokens = word_tokenize(s)
-	            input_txt = input_txt + tokens
-	        inp_vocab = set(input_txt)
+	# embedding selection by numbers of signature words overlap		
+	def EmbedSelect(self,file_dir):
+		with open(file_dir) as f:
+			input_txt = []
+			sentences = sent_tokenize(f.read())
+			for s in sentences:
+				tokens = word_tokenize(s)
+				input_txt = input_txt + tokens
+			inp_vocab = set(input_txt)
 	        inp_vsize = (len(inp_vocab))
-	    f.close()
-
-	    for root_1, dir_1, files in os.walk(emb_dir):
-	        for fname in files:
-	            filepath = (os.path.join(emb_dir, fname))
-	            model = Word2Vec.load_word2vec_format(filepath, binary=False)
-	            emb_vocab = set(model.vocab.keys())
-	            int_count = float(len(set.intersection(inp_vocab, emb_vocab)))
-	            percent_inp = int_count/inp_vsize
-	            percent_emb = int_count/(len(emb_vocab))
-	            print (fname)
-	            print ("Overlapping Vocab: ", int_count)
-	            print ("Percent of Input Vocab in Emb: ", percent_inp)
-	            print ("Percent of Emb Vocab in Inp: ", percent_emb)
-
+		f.close()
+		signature_dir = embedding.embedding_list['signature']
+		emb_sign_url = ''
+		for item in signature_dir:
+			if pd.notnull(item):
+				embed = pd.read_csv(item,header = None)
+				embed = embed.values[1].tolist()
+				embed = set(embed[0].split(' ')[1:])
+				int_count = float(len(set.intersection(embed,inp_vocab)))
+				if int_count > embedding.embedding_score:
+					embedding.embedding_score = int_count
+					emb_sign_url = item
+		return str(embedding.embedding_list['embedding_name'][signature_dir == emb_sign_url].values[0])
+						
 A = embedding('NYT_Weather_Environment_Energy',100,'2016Spring/')
-embed = A.download()
+# embed = A.download()
+print A.EmbedSelect('reuters/r8-train-all-terms.txt')
 # data,seed = A.CloseWord_test(10,10,10)
 # print data,seed
 # print A.CloseWord_reference('would')
