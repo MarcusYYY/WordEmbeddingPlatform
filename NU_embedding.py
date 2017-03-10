@@ -10,13 +10,13 @@ def report(count, blockSize, totalSize):
 	sys.stdout.flush()
 
 class embedding:
-
 	# load the whole list of current availiable embeddings
 	embedding_list = pd.read_csv('https://query.data.world/s/5beqg3omp2z0mtyxnv6tvx5ek')
 	embedding_names = embedding_list['embedding_name']
 	embedding_sizes = embedding_list['vocabulary size']
 	embedding_dimensions = embedding_list['dimension']
 	embedding_score = 0
+
 	if len(embedding_list):
 		print 'Embeddings now avaliable.'
 		print embedding_list
@@ -24,13 +24,14 @@ class embedding:
 		print "No embedding is avaliable now."
 
 	# initiate the embedding class and check if the embedding we want exists
-	def __init__(self,name,dimension,path):
+	def __init__(self,name=None,dimension=None,path=None):
 		self.name = name
 		self.dimension = dimension
 		self.flag = True
 		if name in embedding.embedding_names.values:
 			url = embedding.embedding_list[embedding.embedding_names == name]['url'].values[0]
 			print 'The embedding you are looking for exists. The url is',url
+			self.url = url
 			if len(embedding.embedding_list[embedding.embedding_names == name]['dimension'].values[0].split('_')) == 1:
 				if embedding.embedding_list[embedding.embedding_names == name]['dimension'].values[0].split('_')[0] != str(dimension):
 					print "But the dimension you asked for does not exist."
@@ -43,24 +44,23 @@ class embedding:
 		else:
 			print 'The embedding you are looking for does not exist.'
 			self.flag = False
-		self.url = url
-		try:
-			self.size = int(embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0])
-		except:
-			if embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0][-1] == 'K':
-				num = embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0][:-1]
-				num = int(num) * 1000
-				embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0] = num
-			else:
-				num = embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0][:-1]
-				num = int(num) * 1000000
-				embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0] = num
-
-		self.path = path
-		self.dl = False
-		self.destination = None
-		self.vector = None
-		self.embed = None
+		if self.flag:
+			try:
+				self.size = int(embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0])
+			except:
+				if embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0][-1] == 'K':
+					num = embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0][:-1]
+					num = int(num) * 1000
+					embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0] = num
+				else:
+					num = embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0][:-1]
+					num = int(num) * 1000000
+					embedding.embedding_list[embedding.embedding_names == name]['vocabulary size'].values[0] = num
+			self.path = path
+			self.dl = False
+			self.destination = None
+			self.vector = None
+			self.embed = None
 
 	# download the embeddings in the broker file on data.world and save them 
 	# on the local files.
@@ -131,6 +131,7 @@ class embedding:
 					continue
 			self.vector = word_vector
 			print 'Word embedding has been successfully downloaded.'
+			print 'And you can use YourEmbeddingName.vector to check it.'
 			return word_vector
 		else:
 			print "The embedding you asked for has not been successfully downloaded. "
@@ -202,8 +203,8 @@ class embedding:
 		return str(embedding.embedding_list['embedding_name'][signature_dir == emb_sign_url].values[0])
 						
 A = embedding('NYT_Weather_Environment_Energy',100,'2016Spring/')
-# embed = A.download()
-print A.EmbedSelect('reuters/r8-train-all-terms.txt')
+embed = A.download()
+# print A.EmbedSelect('reuters/r8-train-all-terms.txt')
 # data,seed = A.CloseWord_test(10,10,10)
 # print data,seed
 # print A.CloseWord_reference('would')
