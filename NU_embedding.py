@@ -3,11 +3,26 @@ import urllib,urllib2,requests,numpy,sys,os,zipfile,gensim,string,collections,re
 from scipy import spatial
 from gensim.models import Word2Vec
 from nltk.tokenize import sent_tokenize,word_tokenize
+from datadotworld import DataDotWorld
 
 def report(count, blockSize, totalSize):
 	percent = float(count*blockSize*100/totalSize)
 	sys.stdout.write("\r%d%%" % percent + ' complete')
 	sys.stdout.flush()
+
+def query_embeddings(dataset_,query_):
+	client = client = DataDotWorld(token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcm9kLXVzZXItY2xpZW50Om1hcmN1c3l5eSIsImlzcyI6ImFnZW50Om1hcmN1c3l5eTo6MDhmZDM1MzYtOWY3NC00MzhiLTliZDQtMDJlYzg2NjIzOTYyIiwiaWF0IjoxNDg0MzQ3MzEzLCJyb2xlIjpbInVzZXJfYXBpX3dyaXRlIiwidXNlcl9hcGlfcmVhZCJdLCJnZW5lcmFsLXB1cnBvc2UiOnRydWV9.Wu4joO62ZbheE7GwUcY5sK0HvLn9v6xl3srKRiu85thGjsrDS5pYwo0glop06j2KvodI7h3sQShneSV7TjnSFg")
+	try:
+		results = results = client.query(dataset=dataset_, query=query_)
+		vector = results.as_string().split('\n')[1]
+		print vector
+		result = {}
+		key = vector.split(',')[0]
+		array = numpy.asarray(vector.split(',')[1:],dtype = 'float32')
+		result[key] = array
+		return results
+	except RuntimeError,e:
+		print e
 
 class embedding:
 	# load the whole list of current availiable embeddings
@@ -94,7 +109,6 @@ class embedding:
 			print "You can't download the embedding because errors happened."
 		
 		embed = None
-
 		#extract embedding from zip file or txt file.
 		if self.dl:
 			if zipfile.is_zipfile(self.destination):
@@ -202,8 +216,8 @@ class embedding:
 					emb_sign_url = item
 		return str(embedding.embedding_list['embedding_name'][signature_dir == emb_sign_url].values[0])
 						
-A = embedding('NYT_Weather_Environment_Energy',100,'2016Spring/')
-embed = A.download()
+# A = embedding('NYT_Weather_Environment_Energy',100,'2016Spring/')
+# embed = A.download()
 # print A.EmbedSelect('reuters/r8-train-all-terms.txt')
 # data,seed = A.CloseWord_test(10,10,10)
 # print data,seed
