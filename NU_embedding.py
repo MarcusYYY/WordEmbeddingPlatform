@@ -10,8 +10,10 @@ def report(count, blockSize, totalSize):
 	sys.stdout.write("\r%d%%" % percent + ' complete')
 	sys.stdout.flush()
 
-def query_embeddings(dataset_,query_):
-	client = client = DataDotWorld(token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcm9kLXVzZXItY2xpZW50Om1hcmN1c3l5eSIsImlzcyI6ImFnZW50Om1hcmN1c3l5eTo6MDhmZDM1MzYtOWY3NC00MzhiLTliZDQtMDJlYzg2NjIzOTYyIiwiaWF0IjoxNDg0MzQ3MzEzLCJyb2xlIjpbInVzZXJfYXBpX3dyaXRlIiwidXNlcl9hcGlfcmVhZCJdLCJnZW5lcmFsLXB1cnBvc2UiOnRydWV9.Wu4joO62ZbheE7GwUcY5sK0HvLn9v6xl3srKRiu85thGjsrDS5pYwo0glop06j2KvodI7h3sQShneSV7TjnSFg")
+def query_embeddings(table,word):
+	dataset_ = "marcusyyy/test-for-python-lib"
+	client = DataDotWorld(token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcm9kLXVzZXItY2xpZW50Om1hcmN1c3l5eSIsImlzcyI6ImFnZW50Om1hcmN1c3l5eTo6MDhmZDM1MzYtOWY3NC00MzhiLTliZDQtMDJlYzg2NjIzOTYyIiwiaWF0IjoxNDg0MzQ3MzEzLCJyb2xlIjpbInVzZXJfYXBpX3dyaXRlIiwidXNlcl9hcGlfcmVhZCJdLCJnZW5lcmFsLXB1cnBvc2UiOnRydWV9.Wu4joO62ZbheE7GwUcY5sK0HvLn9v6xl3srKRiu85thGjsrDS5pYwo0glop06j2KvodI7h3sQShneSV7TjnSFg")
+	query_ = 'SELECT * FROM ' + table + " where `Column A` = '" + word + "'"
 	try:
 		results = results = client.query(dataset=dataset_, query=query_)
 		vector = results.as_string().split('\n')[1]
@@ -76,10 +78,11 @@ class embedding:
 			self.destination = None
 			self.vector = None
 			self.embed = None
+			self.table = embedding.embedding_list['table'][embedding.embedding_names == name ]
 
 	# download the embeddings in the broker file on data.world and save them 
 	# on the local files.
-	def download(self):
+	def download(self,file_format):
 		if self.flag:
 			url = self.url
 			form = url.split('.')[-1]
@@ -94,16 +97,23 @@ class embedding:
 				self.destination = path + name + '.zip'
 				print 'The embedding path is %s .' % self.destination
 			else:
-				
-				if not os.path.exists(path):
-					os.makedirs(path)
-				r = requests.get(url,stream = True)
-				self.destination = path + self.name + '.txt'
-				with open(self.destination,'wb') as f:
-					for chunk in r.iter_content(chunk_size = 1024):
-						if chunk:
-							f.write(chunk)
-				print 'The embedding path is %s .' % self.destination
+				if file_format == 'txt':
+					if not os.path.exists(path):
+						os.makedirs(path)
+					r = requests.get(url,stream = True)
+					self.destination = path + self.name + '.txt'
+					with open(self.destination,'wb') as f:
+						for chunk in r.iter_content(chunk_size = 1024):
+							if chunk:
+								f.write(chunk)
+					print 'The embedding path is %s .' % self.destination
+				elif file_format == 'csv':
+					if not os.path.exists(path):
+						os.makedirs(path)
+					self.destination = path + self.name + '.csv'
+					df = pd.read_csv(self.url)
+					df.to_csv(self.destination, sep = '\t')
+					print 'The embedding path is %s .' % self.destination
 			self.dl = True
 		else:
 			print "You can't download the embedding because errors happened."
@@ -130,16 +140,17 @@ class embedding:
 				file = open(self.destination)
 				embed = file.read()
 			self.embed = embed
+			print embed
 			#store the word vector into dictionary
 			word_vector = {}
 			cach = embed.split('\n')
 			for i,row in enumerate(cach):
-				if i == 0:
-					continue
 				values = row.split()
+				if len(values) < 3:
+					continue
 				try:
-					word = values[0]
-					coefs = numpy.asarray(values[1:],dtype = 'float32')
+					word = values[1]
+					coefs = numpy.asarray(values[2:],dtype = 'float32')
 					word_vector[word] = coefs
 				except:
 					continue
@@ -215,10 +226,12 @@ class embedding:
 					embedding.embedding_score = int_count
 					emb_sign_url = item
 		return str(embedding.embedding_list['embedding_name'][signature_dir == emb_sign_url].values[0])
-						
-# A = embedding('NYT_Weather_Environment_Energy',100,'2016Spring/')
-# embed = A.download()
+	
+A = embedding('NYT_ArtDance',100,'2016Spring/')
+embed = A.download(file_format = 'csv')
+print embed['the']
 # print A.EmbedSelect('reuters/r8-train-all-terms.txt')
 # data,seed = A.CloseWord_test(10,10,10)
 # print data,seed
 # print A.CloseWord_reference('would')
+# query_embeddings('ArtDanceMusic','the')
