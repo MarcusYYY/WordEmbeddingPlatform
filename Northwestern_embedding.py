@@ -78,26 +78,28 @@ def EmbedExtract(file_dir,table,batch = 240):
 	overlap_words = []
 	for word in ans:
 		overlap_words.append(word.split(',')[0])
-	int_count = float(len(set.intersection(set(overlap_words),set(words))))
+	int_count = int(len(set.intersection(set(overlap_words),set(words))))
 	missing_words = str(len(words) - int_count)
-	print 'There are ' + missing_words + " tokens that can't be find in this pretrained word embedding."
+	percent = str(int_count * 100 / len(words))
+	print 'There are ' + missing_words + " tokens that can't be found in this pretrained word embedding."
+	print percent + "%" + " words can be found in this pretrained word embedding."
 	return final_result
 
 class embedding:
 	# Initiate the embedding class and check if the embedding we want exists
 	def __init__(self,name=None,dimension=None,path=None):
 		# Load the whole list of current availiable embeddings
-		embedding_list = pd.read_csv('https://query.data.world/s/5hfqcdnajbixxmze9q725mdrp')
+		embedding_list = pd.read_csv('https://query.data.world/s/7786jpst5l8zq6gpow2aqe1mw')
 		embedding_names = embedding_list['embedding_name']
 		embedding_sizes = embedding_list['vocabulary size']
 		embedding_dimensions = embedding_list['dimension']
 		embedding_score = 0
-
-		if len(embedding_list):
-			print 'Embeddings now avaliable.'
-			print embedding_list
-		else:
-			print "No embedding is avaliable now."
+		if name == None:
+			if len(embedding_list):
+				print 'Embeddings now avaliable.'
+				print embedding_list
+			else:
+				print "No embedding is avaliable now."
 
 		self.name = name
 		self.dimension = dimension
@@ -241,9 +243,3 @@ class embedding:
 					embedding.embedding_score = int_count
 					emb_sign_url = item
 		return str(embedding.embedding_list['embedding_name'][signature_dir == emb_sign_url].values[0])
-
-file_dir = 'reuters/r8-test-all-terms.txt'
-query_embeddings('ArtDanceMusic','the')
-print EmbedExtract(file_dir,'ArtDanceMusic',250)
-A = embedding('NYT_ArtDanceMusic',100,'2016Spring/')
-embed = A.download(file_format = 'csv')
