@@ -1,9 +1,11 @@
 import pandas as pd
+import numpy as np
 import urllib,urllib2,requests,numpy,sys,os,zipfile,gensim,string,collections,re,nltk,requests
 from scipy import spatial
 from gensim.models import Word2Vec
 from nltk.tokenize import sent_tokenize,word_tokenize
-from datadotworld import DataDotWorld
+import datadotworld as dw
+
 
 def report(count, blockSize, totalSize):
 	percent = float(count*blockSize*100/totalSize)
@@ -13,17 +15,11 @@ def report(count, blockSize, totalSize):
 # SQL query for specific word embedding in given table
 def query_embeddings(table,word):
 	dataset_ = "marcusyyy/test-for-python-lib"
-	client = DataDotWorld(token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcm9kLXVzZXItY2xpZW50Om1hcmN1c3l5eSIsImlzcyI6ImFnZW50Om1hcmN1c3l5eTo6MDhmZDM1MzYtOWY3NC00MzhiLTliZDQtMDJlYzg2NjIzOTYyIiwiaWF0IjoxNDg0MzQ3MzEzLCJyb2xlIjpbInVzZXJfYXBpX3dyaXRlIiwidXNlcl9hcGlfcmVhZCJdLCJnZW5lcmFsLXB1cnBvc2UiOnRydWV9.Wu4joO62ZbheE7GwUcY5sK0HvLn9v6xl3srKRiu85thGjsrDS5pYwo0glop06j2KvodI7h3sQShneSV7TjnSFg")
 	query_ = 'SELECT * FROM ' + table + " where `Column A` = '" + word + "'"
 	try:
-		results = client.query(dataset=dataset_, query=query_)
-		vector = results.as_string().split('\n')[1]
-		print vector
-		result = {}
-		key = str(vector.split(',')[0])
-		array = numpy.asarray(vector.split(',')[1:],dtype = 'float32')
-		result[key] = array
-		return result
+		results = dw.query(dataset_, query_)
+		print results.dataframe.values[0]
+		return results.dataframe.values[0]
 	except RuntimeError,e:
 		print e
 
@@ -39,7 +35,7 @@ def EmbedExtract(file_dir,table,batch = 240):
 		inp_vsize = (len(inp_vocab))
 	f.close()
 	dataset_ = "marcusyyy/test-for-python-lib"
-	client = DataDotWorld(token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcm9kLXVzZXItY2xpZW50Om1hcmN1c3l5eSIsImlzcyI6ImFnZW50Om1hcmN1c3l5eTo6MDhmZDM1MzYtOWY3NC00MzhiLTliZDQtMDJlYzg2NjIzOTYyIiwiaWF0IjoxNDg0MzQ3MzEzLCJyb2xlIjpbInVzZXJfYXBpX3dyaXRlIiwidXNlcl9hcGlfcmVhZCJdLCJnZW5lcmFsLXB1cnBvc2UiOnRydWV9.Wu4joO62ZbheE7GwUcY5sK0HvLn9v6xl3srKRiu85thGjsrDS5pYwo0glop06j2KvodI7h3sQShneSV7TjnSFg")
+	# client = DataDotWorld(token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJwcm9kLXVzZXItY2xpZW50Om1hcmN1c3l5eSIsImlzcyI6ImFnZW50Om1hcmN1c3l5eTo6MDhmZDM1MzYtOWY3NC00MzhiLTliZDQtMDJlYzg2NjIzOTYyIiwiaWF0IjoxNDg0MzQ3MzEzLCJyb2xlIjpbInVzZXJfYXBpX3dyaXRlIiwidXNlcl9hcGlfcmVhZCJdLCJnZW5lcmFsLXB1cnBvc2UiOnRydWV9.Wu4joO62ZbheE7GwUcY5sK0HvLn9v6xl3srKRiu85thGjsrDS5pYwo0glop06j2KvodI7h3sQShneSV7TjnSFg")
 	query_ = ''
 	final_result = []
 	back_query = ''
@@ -53,7 +49,7 @@ def EmbedExtract(file_dir,table,batch = 240):
 		elif i % batch == 0:
 			process = str((i)*100/len(words))
 			try:
-				results = client.query(dataset=dataset_, query=query_)
+				results = dw.query(dataset_, query_)
 				print process + "%" + ' has been completed.'
 				back_query = query_
 				back_up_i = i
@@ -66,18 +62,26 @@ def EmbedExtract(file_dir,table,batch = 240):
 					break
 				print 'Batch size too large. Reducing to ' + str(batch)
 				continue
-			vector = results.as_string().split('\n')[1:]
+			vector = results.dataframe.values
 			final_result.extend(vector)
 			query_ = 'SELECT * FROM ' + table + " where `Column A` = '" + words[i] + "'"
 		else:
 			query_ = query_ + " OR `Column A` = '" + words[i] + "'"
 		i = i + 1
 	print 'Embedding successfully extracted.'
-	final_result = str('\r'.join(final_result))
-	ans = final_result.split('\r')
+	word_vector = {}
+	ans = ''
+
+	for vector in final_result:
+		word = str(vector[0])
+		embed = np.array2string(vector[1:])[1:-1]
+		embed = embed.replace('\n','')
+		word_vector[word] = embed
+		ans = ans + word + ' ' + embed + '\n'
+
 	overlap_words = []
-	for word in ans:
-		overlap_words.append(word.split(',')[0])
+	for word in word_vector:
+		overlap_words.append(word)
 	int_count = int(len(set.intersection(set(overlap_words),set(words))))
 	missing_words = str(len(words) - int_count)
 	percent = str(int_count * 100 / len(words))
@@ -243,3 +247,5 @@ class embedding:
 					embedding.embedding_score = int_count
 					emb_sign_url = item
 		return str(embedding.embedding_list['embedding_name'][signature_dir == emb_sign_url].values[0])
+# query_embeddings('ArtDanceMusic','the')
+EmbedExtract('reuters/r8-test-all-terms.txt','ArtDanceMusic')
