@@ -12,6 +12,12 @@ from operator import itemgetter
 
 hdv_vocab = []
 
+def check():
+	embedding_list = pd.read_csv('https://query.data.world/s/4o7h67xz3m3zgsui7tk08yst8')
+	print 'Embeddings now avaliable.'
+	print embedding_list
+
+# Report of the process of downloading large word embeddings.
 def report(count, blockSize, totalSize):
 	percent = float(count*blockSize*100/totalSize)
 	sys.stdout.write("\r%d%%" % percent + ' complete')
@@ -22,6 +28,11 @@ def query_embeddings(table,word):
 	embedding_list = pd.read_csv('https://query.data.world/s/4o7h67xz3m3zgsui7tk08yst8')
 	table_list = embedding_list['table']
 	format_list = embedding_list['file_format']
+	name_list = embedding_list['embedding_name']
+
+	if not name_list[table_list == table].values:
+		print "The embedding you are querying doesn't exist."
+		return
 	if format_list[table_list == table].values[0] != 'csv':
 		print 'Sorry for the inconvenience but we are not able to query Non-csv file.'
 		return 
@@ -40,6 +51,21 @@ def query_embeddings(table,word):
 
 # Get the subset of the pretrained embeddings according to the raw text input.
 def EmbedExtract(file_dir,table,batch = 200,pad = False,check = False):
+	
+	#Get the info of all available embeddings.
+	embedding_list = pd.read_csv('https://query.data.world/s/4o7h67xz3m3zgsui7tk08yst8')
+	table_list = embedding_list['table']
+	format_list = embedding_list['file_format']
+	name_list = embedding_list['embedding_name']
+
+	#Check whether the embedding user asked for exist or not.
+	if not name_list[table_list == table].values:
+		print "The embedding you asked to extract from doesn't exist."
+		return
+	if format_list[table_list == table].values[0] != 'csv':
+		print 'Sorry for the inconvenience but we are not able to query Non-csv file.'
+		return
+
 	texts = ''
 	for name in sorted(os.listdir(file_dir)):
 		path = os.path.join(file_dir, name)
@@ -67,9 +93,9 @@ def EmbedExtract(file_dir,table,batch = 200,pad = False,check = False):
 	words = list(inp_vocab)
 	i = 0
 	back_up_i = 0
+
+	#Extraction is able to recover from Runtime error by adding restore mechanism.
 	while i < len(words):
-		if i > 500:
-			break
 		if i == 0:
 			query_ = 'SELECT * FROM ' + table + " where `Column A` = '" + words[i] + "'"
 		elif i % batch == 0:
@@ -94,9 +120,15 @@ def EmbedExtract(file_dir,table,batch = 200,pad = False,check = False):
 		else:
 			query_ = query_ + " OR `Column A` = '" + words[i] + "'"
 		i = i + 1
+
+	if batch == 0:
+		print "Embedding extraction failed."
+		return
+
 	print 'Embedding successfully extracted.'
 	word_vector = {}
 	ans = ''
+
 	if pad == True:
 		for word in inp_vocab:
 			if not word_vector.has_key(word):
@@ -114,17 +146,19 @@ def EmbedExtract(file_dir,table,batch = 200,pad = False,check = False):
 		word_vector[word] = embed
 		ans = ans + word + ' ' + embed + '\n'
 	overlap_words = []
+
 	for word in word_vector:
 		overlap_words.append(word)
 	int_count = int(len(set.intersection(set(overlap_words),set(words))))
 	missing_words = str(len(words) - int_count)
 	percent = str(int_count * 100 / len(words))
+
 	print 'There are ' + missing_words + " tokens that can't be found in this pretrained word embedding."
 	print percent + "%" + " words can be found in this pretrained word embedding."
+	
 	if check:
 		print ans
 	return final_result
-
 
 def HighDensityVocab(tolerance = 0.85,num = 5000,num_stopwords = 200):
 	embedding_list = pd.read_csv('https://query.data.world/s/4o7h67xz3m3zgsui7tk08yst8')
@@ -201,12 +235,11 @@ def RankVocabGenerator(inp_dir,num = 5000):
 		if word in cnt.keys(): del cnt[word]
 
 	corpus_name = inp_dir.split('/')[-1]
-    # Pickle dump an ordered list of 5000 most common words
+
 	vocab = [str(word[0]) for word in  cnt.most_common(num)]
 	return vocab
 
 def method_a(inp_dir,num_sig,num_sig_embedding,num_stopwords):
-
 	rank_dict = dict()
 	signature,hf_vocab = HighDensityVocab(num = num_sig_embedding,num_stopwords = num_stopwords)
 	test_vocab = RankVocabGenerator(inp_dir,num_sig)
@@ -219,18 +252,14 @@ def method_a(inp_dir,num_sig,num_sig_embedding,num_stopwords):
 				rank_dict[embed] += test_vocab.index(curr_inpword)/float(len(test_vocab))
 			else:
 				rank_dict[embed] += len(signature[embed])/float(len(test_vocab))
+	
 	print "The following list is the score of each embedding get in method A.They are sorted in descending order."
 	pprint (sorted(rank_dict.items(),key=itemgetter(1)))
     # return key in rank_dict such that value is lowest
 
-def check():
-	embedding_list = pd.read_csv('https://query.data.world/s/4o7h67xz3m3zgsui7tk08yst8')
-	print 'Embeddings now avaliable.'
-	print embedding_list
-
 class embedding: 
 	# Initiate the embedding class and check if the embedding we want exists
-	def __init__(self,name=None,dimension=None,path='_'):
+	def __init__(self,name=None,dimension=None):
 		# Load the whole list of current availiable embeddings
 		embedding_list = pd.read_csv('https://query.data.world/s/4o7h67xz3m3zgsui7tk08yst8')
 		embedding_names = embedding_list['embedding_name']
@@ -284,7 +313,7 @@ class embedding:
 					num = embedding_list[embedding_names == name]['vocabulary size'].values[0][:-1]
 					num = int(num) * 1000000
 					embedding_list[embedding_names == name]['vocabulary size'].values[0] = num
-			self.path = path
+			self.path = ''
 			self.dl = False
 			self.destination = None
 			self.vector = None
@@ -293,7 +322,11 @@ class embedding:
 
 	# Download the embeddings in the broker file on data.world and save them 
 	# on the local files.
-	def download(self,file_format = 'csv'):
+	def download(self,path = '_',file_format = 'csv'):
+		if len(file_format) > 5:
+			print "File format error. Please check it again."
+			return 
+		self.path = path
 		if self.flag:
 			url = self.url
 			path = self.path
@@ -301,6 +334,7 @@ class embedding:
 				name = url.split('/')[-1]
 				if not os.path.exists(path) and path != '_':
 					os.makedirs(path)
+
 				urllib.urlretrieve(url,path + name,reporthook = report)
 				self.destination = path + name
 				print self.destination
@@ -318,7 +352,10 @@ class embedding:
 					print 'The embedding path is %s .' % os.path.join(os.getcwd(),self.destination)
 				elif file_format == 'csv':
 					if not os.path.exists(path) and path != '_':
-						os.makedirs(path)
+						self.path = str(os.getcwd()) + '/' + path
+						os.makedirs(self.path)
+					elif path == '_':
+						self.path = str(os.getcwd()) + '/'
 					self.destination = path + self.name + '.csv'
 					df = pd.read_csv(self.url)
 					df.to_csv(self.destination,index = False)
