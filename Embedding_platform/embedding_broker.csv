@@ -1,0 +1,8 @@
+embedding_name,dimension,vocabulary size,url,table,file_format
+agriculture_40,100,19007,https://query.data.world/s/58q6938mk0o6w7ij2tam1rird,agriculture_40,csv
+art_40,100,17322,https://query.data.world/s/ewf2464mqcr7tyiatbhnnws5s,arts_40,csv
+books_40,100,17506,https://query.data.world/s/9p5a0190igbebjtw4zg2aqtge,books_40,csv
+econ_40,100,18845,https://query.data.world/s/2md9y7p32brybt470n2ask66w,econ_40,csv
+govt_40,100,19928,https://query.data.world/s/4qd35tp7wo6afsb86f8rtxioa,govt_40,csv
+movies_40,100,18108,https://query.data.world/s/6t81cv7pp0xiwddvtuafehkkm,movies_40,csv
+weather_40,100,19442,https://query.data.world/s/az3373clxwtsyz6jnou5g9wq5,weather_40,csv
