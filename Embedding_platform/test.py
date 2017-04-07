@@ -16,8 +16,8 @@ ep.EmbedExtract(file_dir ='/Users/Marcus/Desktop/reuters/reutersR8_all' ,table =
 # Initiate word embedding by specifying its name and dimension.
 # Initiation will fail if wrong dimension parameter given or embedding doesn't exist.
 a = ep.embedding('agriculture_40',100)
-a.download(path = '2016spring/')
-print a.vector
+a.download(path = 'Embedding/')
+
 
 INPUT_DIR = '/Users/Marcus/Desktop/reuters/reutersR8_all'
 # Embedding selection by method A.

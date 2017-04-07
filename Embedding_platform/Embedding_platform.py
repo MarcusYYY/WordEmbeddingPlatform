@@ -129,6 +129,14 @@ def EmbedExtract(file_dir,table,batch = 200,pad = False,check = False):
 	word_vector = {}
 	ans = ''
 
+	for vector in final_result:
+		word = str(vector[0])
+		embed = np.array2string(vector[1:])[1:-1]
+		embed = embed.replace('\n','')
+		word_vector[word] = embed
+		ans = ans + word + ' ' + embed + '\n'
+	overlap_words = []
+
 	if pad == True:
 		for word in inp_vocab:
 			if not word_vector.has_key(word):
@@ -138,14 +146,8 @@ def EmbedExtract(file_dir,table,batch = 200,pad = False,check = False):
 				subset.extend(zero)
 				subset = np.asarray(subset,dtype=object)
 				final_result.append(subset)
-
-	for vector in final_result:
-		word = str(vector[0])
-		embed = np.array2string(vector[1:])[1:-1]
-		embed = embed.replace('\n','')
-		word_vector[word] = embed
-		ans = ans + word + ' ' + embed + '\n'
-	overlap_words = []
+				embed = np.array2string(zero)
+				ans = ans + word + ' ' + embed + '\n'
 
 	for word in word_vector:
 		overlap_words.append(word)
