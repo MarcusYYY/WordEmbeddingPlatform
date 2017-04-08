@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import urllib,urllib2,requests,numpy,sys,os,zipfile,gensim,string,collections,re,nltk,requests,codecs
+import urllib,urllib2,requests,numpy,sys,os,zipfile,gensim,string,collections,re,nltk,codecs
 from scipy import spatial
 from gensim.models import Word2Vec
 from nltk.tokenize import sent_tokenize,word_tokenize
@@ -9,11 +9,12 @@ from collections import Counter
 from pprint import pprint
 import cPickle as pickle
 from operator import itemgetter
+import _init_ 
 
 hdv_vocab = []
 
 def check():
-	embedding_list = pd.read_csv('https://query.data.world/s/4o7h67xz3m3zgsui7tk08yst8')
+	embedding_list = pd.read_csv(_init_.broker_url)
 	print 'Embeddings now avaliable.'
 	print embedding_list
 
@@ -25,7 +26,7 @@ def report(count, blockSize, totalSize):
 
 # SQL query for specific word embedding in given table
 def query_embeddings(table,word):
-	embedding_list = pd.read_csv('https://query.data.world/s/4o7h67xz3m3zgsui7tk08yst8')
+	embedding_list = pd.read_csv(_init_.broker_url)
 	table_list = embedding_list['table']
 	format_list = embedding_list['file_format']
 	name_list = embedding_list['embedding_name']
@@ -36,7 +37,7 @@ def query_embeddings(table,word):
 	if format_list[table_list == table].values[0] != 'csv':
 		print 'Sorry for the inconvenience but we are not able to query Non-csv file.'
 		return 
-	dataset_ = "marcusyyy/northwestern-word-embedding"
+	dataset_ = _init_.table_parser
 	query_ = 'SELECT * FROM ' + table + " where `Column A` = '" + word + "'"
 	try:
 		results = dw.query(dataset_, query_)
@@ -53,7 +54,7 @@ def query_embeddings(table,word):
 def EmbedExtract(file_dir,table,batch = 200,pad = False,check = False):
 	
 	#Get the info of all available embeddings.
-	embedding_list = pd.read_csv('https://query.data.world/s/4o7h67xz3m3zgsui7tk08yst8')
+	embedding_list = pd.read_csv(_init_.broker_url)
 	table_list = embedding_list['table']
 	format_list = embedding_list['file_format']
 	name_list = embedding_list['embedding_name']
@@ -85,7 +86,7 @@ def EmbedExtract(file_dir,table,batch = 200,pad = False,check = False):
 	inp_vocab = set(input_txt)
 	inp_vsize = (len(inp_vocab))
 
-	dataset_ = "marcusyyy/northwestern-word-embedding"
+	dataset_ = _init_.table_parser
 	query_ = ''
 	final_result = []
 	back_query = ''
@@ -163,7 +164,7 @@ def EmbedExtract(file_dir,table,batch = 200,pad = False,check = False):
 	return final_result
 
 def HighDensityVocab(tolerance = 0.85,num = 5000,num_stopwords = 200):
-	embedding_list = pd.read_csv('https://query.data.world/s/4o7h67xz3m3zgsui7tk08yst8')
+	embedding_list = pd.read_csv(_init_.broker_url)
 	print 'Infomation of the current avaliable embeddings.'
 	print embedding_list
 	print str(num_stopwords) + ' most frequent words will be removed as stop words.'
@@ -263,7 +264,7 @@ class embedding:
 	# Initiate the embedding class and check if the embedding we want exists
 	def __init__(self,name=None,dimension=None):
 		# Load the whole list of current availiable embeddings
-		embedding_list = pd.read_csv('https://query.data.world/s/4o7h67xz3m3zgsui7tk08yst8')
+		embedding_list = pd.read_csv(_init_.broker_url)
 		embedding_names = embedding_list['embedding_name']
 		embedding_sizes = embedding_list['vocabulary size']
 		embedding_dimensions = embedding_list['dimension']
