@@ -21,6 +21,12 @@ def read(*paths):
 	with open(filename) as f:
 		return f.read()
 
+def find_version(*paths):
+	contents = read(*paths)
+	match = re.search(r'^__version__ = [\'"]([^\'"]+)[\'"]', contents, re.M)
+	if not match:
+		raise RuntimeError('Unable to find version string.')
+	return match.group(1)
 
 setup(
 	name = 'WordEmbeddingPlatform',
