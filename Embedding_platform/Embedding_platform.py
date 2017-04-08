@@ -9,12 +9,12 @@ from collections import Counter
 from pprint import pprint
 import cPickle as pickle
 from operator import itemgetter
-import _init_ 
+import info
 
 hdv_vocab = []
 
 def check():
-	embedding_list = pd.read_csv(_init_.broker_url)
+	embedding_list = pd.read_csv(info.broker_url)
 	print 'Embeddings now avaliable.'
 	print embedding_list
 
@@ -26,7 +26,7 @@ def report(count, blockSize, totalSize):
 
 # SQL query for specific word embedding in given table
 def query_embeddings(table,word):
-	embedding_list = pd.read_csv(_init_.broker_url)
+	embedding_list = pd.read_csv(info.broker_url)
 	table_list = embedding_list['table']
 	format_list = embedding_list['file_format']
 	name_list = embedding_list['embedding_name']
@@ -54,7 +54,7 @@ def query_embeddings(table,word):
 def EmbedExtract(file_dir,table,batch = 200,pad = False,check = False):
 	
 	#Get the info of all available embeddings.
-	embedding_list = pd.read_csv(_init_.broker_url)
+	embedding_list = pd.read_csv(info.broker_url)
 	table_list = embedding_list['table']
 	format_list = embedding_list['file_format']
 	name_list = embedding_list['embedding_name']
@@ -86,7 +86,7 @@ def EmbedExtract(file_dir,table,batch = 200,pad = False,check = False):
 	inp_vocab = set(input_txt)
 	inp_vsize = (len(inp_vocab))
 
-	dataset_ = _init_.table_parser
+	dataset_ = info.table_parser
 	query_ = ''
 	final_result = []
 	back_query = ''
