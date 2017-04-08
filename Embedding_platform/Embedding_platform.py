@@ -17,6 +17,7 @@ def check():
 	embedding_list = pd.read_csv(info.broker_url)
 	print 'Embeddings now avaliable.'
 	print embedding_list
+	return embedding_lis
 
 # Report of the process of downloading large word embeddings.
 def report(count, blockSize, totalSize):
@@ -45,7 +46,6 @@ def query_embeddings(table,word):
 		ans.append(word)
 		num = results.dataframe.values[0][1:]
 		ans.extend(num)
-		print ans
 		return ans
 	except RuntimeError,e:
 		print e

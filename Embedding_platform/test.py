@@ -1,7 +1,7 @@
 import Embedding_platform as ep
 
 #Check the information of all avaiable embeddings existing in the broker.csv
-# ep.check()
+ep.check()
 
 # Query for a specified word in specfied embedding.
 # ep.query_embeddings('arts_40','you')
