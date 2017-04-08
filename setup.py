@@ -30,7 +30,7 @@ def find_version(*paths):
 
 setup(
 	name = 'Embedding_platform',
-	version = find_version('Embedding_platform','_init_.py')
+	version = find_version('Embedding_platform','_init_.py'),
 	description = 'Python library for word embeddings',
 	long_description = read('README.md'),
 	url = 'https://github.com/MarcusYYY/WordEmbeddingPlatform',
