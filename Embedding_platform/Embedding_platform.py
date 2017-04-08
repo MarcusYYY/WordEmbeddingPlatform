@@ -227,25 +227,24 @@ def RankVocabGenerator(inp_dir,num = 5000):
 
 	cnt = Counter()
 	# Counter for all words in the corpus
-	try:
+	if os.path.isdir(inp_dir):
 		for (root, dirs, files) in os.walk(inp_dir):
 
 			files = [f for f in files if not f[0] == '.']
 			for f in files:
 				filepath = os.path.join(root,f)
-
 				# CHANGE: Update Codec as needed for test corpus
-				with codecs.open(filepath,'rb', encoding="cp1252") as f:
-					decoded_txt = f.read()
-					tok_txt = word_tokenize(decoded_txt.lower())
-					for word in tok_txt:
-						for ch in word:
-							if (ch not in string.punctuation and ch not in string.digits):
-								cnt[word] += 1
-								break
+				try:
+					with codecs.open(filepath,'rb', encoding="cp1252") as f:
+						decoded_txt = f.read()
+						tok_txt = word_tokenize(decoded_txt.lower())
+						for word in tok_txt:
+							cnt[word] += 1					
+				except Exception,e:
+					continue
 		print "Pick top " + str(num) + " most frequently occurring words in the corpus as signature. "
-	except:
-		print "No such file or your directory of corpus can't be found."
+	else:
+		print "No Such file or your path is incorrect."
 		return
     # Delete HDF Words
     # Update with correct high density vocab filename
@@ -253,8 +252,12 @@ def RankVocabGenerator(inp_dir,num = 5000):
 		if word in cnt.keys(): del cnt[word]
 
 	corpus_name = inp_dir.split('/')[-1]
-
-	vocab = [str(word[0]) for word in  cnt.most_common(num)]
+	vocab = []
+	for word in cnt.most_common(num):
+		try:
+			vocab.append(str(word[0]))
+		except:
+			continue
 	return vocab
 
 def method_a(inp_dir,num_sig,num_sig_embedding,num_stopwords):

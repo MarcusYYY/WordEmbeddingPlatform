@@ -19,6 +19,6 @@ import Embedding_platform as ep
 # a.download(path = 'Embedding/')
 
 
-INPUT_DIR = '/Users/Marcus/Desktop/reuters/reutersR8_all'
+INPUT_DIR = '/Users/Marcus/Desktop/Archive/Maas_IMDB'
 # Embedding selection by method A.
-ep.method_a(inp_dir = INPUT_DIR,num_sig = 5000,num_sig_embedding = 5000,num_stopwords = 200)
+ep.method_a(inp_dir = INPUT_DIR,num_sig = 5000,num_sig_embedding = 5000,num_stopwords = 100)
