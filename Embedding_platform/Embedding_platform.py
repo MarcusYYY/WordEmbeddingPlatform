@@ -37,7 +37,7 @@ def query_embeddings(table,word):
 	if format_list[table_list == table].values[0] != 'csv':
 		print 'Sorry for the inconvenience but we are not able to query Non-csv file.'
 		return 
-	dataset_ = _init_.table_parser
+	dataset_ = info.table_parser
 	query_ = 'SELECT * FROM ' + table + " where `Column A` = '" + word + "'"
 	try:
 		results = dw.query(dataset_, query_)
@@ -51,7 +51,7 @@ def query_embeddings(table,word):
 		print e
 
 # Get the subset of the pretrained embeddings according to the raw text input.
-def EmbedExtract(file_dir,table,batch = 200,pad = False,check = False):
+def EmbedExtract(file_dir,table,batch = 200,pad = False,check = False,download = False):
 	
 	#Get the info of all available embeddings.
 	embedding_list = pd.read_csv(info.broker_url)
@@ -97,6 +97,8 @@ def EmbedExtract(file_dir,table,batch = 200,pad = False,check = False):
 
 	#Extraction is able to recover from Runtime error by adding restore mechanism.
 	while i < len(words):
+		if i > 500:
+			break
 		if i == 0:
 			query_ = 'SELECT * FROM ' + table + " where `Column A` = '" + words[i] + "'"
 		elif i % batch == 0:
@@ -147,8 +149,16 @@ def EmbedExtract(file_dir,table,batch = 200,pad = False,check = False):
 				subset.extend(zero)
 				subset = np.asarray(subset,dtype=object)
 				final_result.append(subset)
-				embed = np.array2string(zero)
+				embed = np.array2string(zero)[1:-1]
 				ans = ans + word + ' ' + embed + '\n'
+
+	if download == True:
+		f = open('Extracted_' + table + '.txt','w')
+		pool = ans.split('\n')
+		for line in pool:
+			f.write(line)
+			f.write('\n')
+		f.close()
 
 	for word in word_vector:
 		overlap_words.append(word)
@@ -164,7 +174,7 @@ def EmbedExtract(file_dir,table,batch = 200,pad = False,check = False):
 	return final_result
 
 def HighDensityVocab(tolerance = 0.85,num = 5000,num_stopwords = 200):
-	embedding_list = pd.read_csv(_init_.broker_url)
+	embedding_list = pd.read_csv(info.broker_url)
 	print 'Infomation of the current avaliable embeddings.'
 	print embedding_list
 	print str(num_stopwords) + ' most frequent words will be removed as stop words.'
