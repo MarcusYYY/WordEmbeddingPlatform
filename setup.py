@@ -60,7 +60,6 @@ setup(
 	install_requires=[
 		'pandas',
 		'numpy',
-		'urllib2',
 		'requests',
 		'sys',
 		'os',
