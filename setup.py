@@ -62,16 +62,11 @@ setup(
 		'numpy',
 		'requests',
 		'gensim',
-		're',
 		'nltk',
-		'codecs',
 		'scipy',
 		'gensim',
 		'datadotworld',
-		'collection',
 		'pprint',
-		'cPickle',
-		'operator',
 	],
 
 	)
