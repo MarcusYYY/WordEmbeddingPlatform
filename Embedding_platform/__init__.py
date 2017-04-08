@@ -12,5 +12,5 @@ at http://40i123952-4-24305=234052o=2.com
 
 from __future__ import absolute_import
 
-__version__ = '1.0.0-beta.1'
 
+__version__ = '1.0.0-beta.1'

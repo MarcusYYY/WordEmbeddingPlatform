@@ -97,8 +97,6 @@ def EmbedExtract(file_dir,table,batch = 200,pad = False,check = False,download =
 
 	#Extraction is able to recover from Runtime error by adding restore mechanism.
 	while i < len(words):
-		if i > 500:
-			break
 		if i == 0:
 			query_ = 'SELECT * FROM ' + table + " where `Column A` = '" + words[i] + "'"
 		elif i % batch == 0:
@@ -196,6 +194,7 @@ def HighDensityVocab(tolerance = 0.85,num = 5000,num_stopwords = 200):
 		wordlist = file.iloc[0:num_stopwords][0].values
 		files.append(file)
 		for word in wordlist:
+			word = word.lower()
 			if ( word not in emb_vocab):
 				emb_vocab.update({word: 1})
 			else:
@@ -204,7 +203,12 @@ def HighDensityVocab(tolerance = 0.85,num = 5000,num_stopwords = 200):
 	for key in emb_vocab:
 		if (emb_vocab[key] >= threshold):
 			hdv_vocab.append(key)
-	print "High Density Vocabulary found in at least ",tolerance *100, " percent of embeddings."
+	digits = [i for i in string.punctuation]
+	punctuation = [i for i in string.punctuation]
+	hdv_vocab.extend(digits)
+	hdv_vocab.extend(punctuation)
+
+	print "Assembled High Density Vocabulary found in at least ",tolerance *100, " percent of embeddings."
 	
 	#Create a dictionary of which keys are embedding names and values are lists of high freq words(signature)
 	signature = {}
@@ -212,6 +216,7 @@ def HighDensityVocab(tolerance = 0.85,num = 5000,num_stopwords = 200):
 		hf_words = file.iloc[0:num][0].values
 		sig_vocab = []
 		for word in hf_words:
+			word = word.lower()
 			if word not in hdv_vocab:
 				sig_vocab.append(word)
 		signature[name_list.iloc[index]] = sig_vocab

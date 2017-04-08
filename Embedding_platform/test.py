@@ -11,7 +11,7 @@ import Embedding_platform as ep
 # 'pad' = True by default in order to add zeros to fill up our embedding for missing words.
 # 'check' = True by default in order to display embeddings we extacted.
 # ep.EmbedExtract(file_dir ='/Users/Marcus/Desktop/reuters/reutersR8_all' ,table ='art_40',pad = True,check = True)
-ep.EmbedExtract(file_dir ='/Users/Marcus/Desktop/reuters/reutersR8_all' ,table ='arts_40',pad = True,check = True,download = True)
+# ep.EmbedExtract(file_dir ='/Users/Marcus/Desktop/reuters/reutersR8_all' ,table ='arts_40',pad = True,check = True,download = True)
 
 # Initiate word embedding by specifying its name and dimension.
 # Initiation will fail if wrong dimension parameter given or embedding doesn't exist.
