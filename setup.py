@@ -62,7 +62,6 @@ setup(
 		'numpy',
 		'requests',
 		'gensim',
-		'collection',
 		're',
 		'nltk',
 		'codecs',
