@@ -29,17 +29,18 @@ def find_version(*paths):
 	return match.group(1)
 
 setup(
-	name = 'WordEmbeddingPlatform',
+	name = 'Embedding_platform',
+	version = find_version('Embedding_platform','_init_.py')
 	description = 'Python library for word embeddings',
 	long_description = read('README.md'),
 	url = 'https://github.com/MarcusYYY/WordEmbeddingPlatform',
-	author = 'Marcus',
+	author = 'MarcusYYY',
 	author_email = 'marcusyuzc1992@gmail.com',
 	license = 'Apache 2.0',
 	packages = find_packages(),
 	keywords = [
 		'WordEmbeddingPlatform',
-		'EP'
+		'wordvector',
 	],
 	classifiers = [
 		'Development Status :: 4 - Beta',
@@ -69,4 +70,8 @@ setup(
 		'pprint',
 	],
 
-	)
+	setup_requires=[
+		'pytest-runner',
+	],
+
+)
