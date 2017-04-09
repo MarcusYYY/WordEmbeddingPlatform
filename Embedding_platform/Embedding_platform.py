@@ -282,7 +282,7 @@ class embedding:
 	# Initiate the embedding class and check if the embedding we want exists
 	def __init__(self,name=None,dimension=None):
 		# Load the whole list of current availiable embeddings
-		embedding_list = pd.read_csv(_init_.broker_url)
+		embedding_list = pd.read_csv(info.broker_url)
 		embedding_names = embedding_list['embedding_name']
 		embedding_sizes = embedding_list['vocabulary size']
 		embedding_dimensions = embedding_list['dimension']

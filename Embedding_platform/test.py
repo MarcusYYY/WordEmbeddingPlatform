@@ -5,7 +5,7 @@ import Embedding_platform as ep
 
 # Query for a specified word in specfied embedding.
 # print ep.query_embeddings('agriculture_40','you')
-print ep.query_embeddings('agriculture_40','the')
+# print ep.query_embeddings('agriculture_40','the')		
 
 # Extracted necessary parts of pre_trained embeddings for given corpus input. 
 # 'pad' = True by default in order to add zeros to fill up our embedding for missing words.
@@ -15,7 +15,9 @@ print ep.query_embeddings('agriculture_40','the')
 
 # Initiate word embedding by specifying its name and dimension.
 # Initiation will fail if wrong dimension parameter given or embedding doesn't exist.
-# a = ep.embedding('agriculture_40',100)
+a = ep.embedding('agriculture_40',100)
+print a.name
+print a.dimension
 # a.download(path = 'Embedding/')
 
 
