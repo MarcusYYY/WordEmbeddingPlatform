@@ -15,13 +15,13 @@ import Embedding_platform as ep
 
 # Initiate word embedding by specifying its name and dimension.
 # Initiation will fail if wrong dimension parameter given or embedding doesn't exist.
-a = ep.embedding('agriculture_40',100)
-print a.name
-print a.dimension
+# a = ep.embedding('agriculture_40',100)
+# print a.name
+# print a.dimension
 # a.download(path = 'Embedding/')
 
 
-INPUT_DIR = '/Users/Marcus/Desktop/Archive/Maas_IMDB'
+INPUT_DIR = '/Users/Marcus/Desktop/reuters/reutersR8_all'
 
 # Embedding selection by method A.
-# ep.method_a(inp_dir = INPUT_DIR,num_sig = 5000,num_sig_embedding = 5000,num_stopwords = 100)
+ep.method_a(inp_dir = INPUT_DIR,num_sig = 5000,num_sig_embedding = 5000,num_stopwords = 100)

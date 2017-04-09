@@ -273,9 +273,9 @@ def method_a(inp_dir,num_sig,num_sig_embedding,num_stopwords):
 				rank_dict[embed] += test_vocab.index(curr_inpword)/float(len(test_vocab))
 			else:
 				rank_dict[embed] += len(signature[embed])/float(len(test_vocab))
-	
-	print "The following list is the score of each embedding get in method A.They are sorted in descending order."
 	pprint (sorted(rank_dict.items(),key=itemgetter(1)))
+	best_embedding = sorted(rank_dict.items(),key=itemgetter(1))[0]
+	print 'The best pretrained embedding is ' + best_embedding[0] + '.'
     # return key in rank_dict such that value is lowest
 
 class embedding: 
