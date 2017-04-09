@@ -56,4 +56,44 @@ For example
 For example
 ```python
 >>>A = ep.embedding('agriculture_40',100)
+The embedding you are looking for exists. The url is https://query.data.world/s/enfkzx0yrnxevzcy9m7fm81hi
 >>>print A.name
+agriculture_40
+>>>print A.dimension
+100
+>>>A.download(path = 'Embedding/')
+The embedding path is /Users/Embedding_platform/Embedding/agriculture_40.csv .
+Word embedding has been successfully downloaded.
+Check the vector attribute by using embedding_name.vector
+```
+### Embedding selection
+The `method_a(inp_dir,num_sig,num_sig_embedding,num_stopwords)` is an embedding selection method based on[.......].
+`inp_dir` is the path of input corpora.`num_sig` means the number of words chosen as signature of the input corpora. `num_sig_embedding` indicates the number of words picked as signature of the pretrained embedding. And`num_stopwords` is the number of stopwords we ignore in this method.
+For example
+```python
+>>>INPUT_DIR = '/Users/Marcus/Desktop/Archive/Maas_IMDB'
+>>>ep.method_a(inp_dir = INPUT_DIR,num_sig = 5000,num_sig_embedding = 5000,num_stopwords = 100)
+100 most frequent words will be removed as stop words.
+Pick up 5000 top frequent words as signature of all avaliable embeddings.
+Fetching agriculture_40 embeddings and creating its signature.
+Fetching art_40 embeddings and creating its signature.
+Fetching books_40 embeddings and creating its signature.
+Fetching econ_40 embeddings and creating its signature.
+Fetching govt_40 embeddings and creating its signature.
+Fetching movies_40 embeddings and creating its signature.
+Fetching weather_40 embeddings and creating its signature.
+Processing High Density Vocabulary list.
+Assembled High Density Vocabulary found in at least  85.0  percent of embeddings.
+Pick top 5000 most frequently occurring words in the corpus as signature. 
+[('movies_40', 2892.3935935935065),
+ ('books_40', 2915.7785785784804),
+ ('art_40', 3016.7237237236086),
+ ('agriculture_40', 3236.933733733591),
+ ('govt_40', 3243.128928928771),
+ ('weather_40', 3267.9365365363774),
+ ('econ_40', 3275.4096096094536)]
+ The best pretrained embedding is econ_40.
+ ```
+ 
+
+
