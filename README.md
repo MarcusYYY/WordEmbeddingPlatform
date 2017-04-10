@@ -67,11 +67,12 @@ Word embedding has been successfully downloaded.
 Check the vector attribute by using embedding_name.vector
 ```
 ### Embedding selection
-The `method_a(inp_dir,num_sig,num_sig_embedding,num_stopwords)` is an embedding selection method based on[.......].
+The `method_a(inp_dir,num_sig,num_sig_embedding,num_stopwords)` is an embedding selection method based on this [paper].
+(https://arxiv.org/pdf/1507.05523.pdf).We are assuming that word embeddings with similar high frequency words are built from similar topics corpor.
 `inp_dir` is the path of input corpora.`num_sig` means the number of words chosen as signature of the input corpora. `num_sig_embedding` indicates the number of words picked as signature of the pretrained embedding. And`num_stopwords` is the number of stopwords we ignore in this method.
 For example
 ```python
->>>INPUT_DIR = '/Users/Marcus/Desktop/Archive/Maas_IMDB'
+>>>INPUT_DIR = '/Users/Example_corpora'
 >>>ep.method_a(inp_dir = INPUT_DIR,num_sig = 5000,num_sig_embedding = 5000,num_stopwords = 100)
 100 most frequent words will be removed as stop words.
 Pick up 5000 top frequent words as signature of all avaliable embeddings.
