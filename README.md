@@ -67,7 +67,7 @@ Check the vector attribute by using embedding_name.vector
 ```
 ### Embedding selection
 The `method_a(inp_dir,num_sig,num_sig_embedding,num_stopwords)` is an embedding selection method based on this [paper](https://arxiv.org/pdf/1507.05523.pdf).
-We are assuming that word embeddings with similar high frequency words are built from similar topics corpor.
+We are assuming that word embeddings with similar high frequency words are built from similar topics corpor. The score this method computed is negatively correlated with the performance of those pretrained word emebddings.Therefore the emebdding with the least score outperform the others.
 `inp_dir` is the path of input corpora.`num_sig` means the number of words chosen as signature of the input corpora. `num_sig_embedding` indicates the number of words picked as signature of the pretrained embedding. And`num_stopwords` is the number of stopwords we ignore in this method.
 For example
 ```python
@@ -92,7 +92,7 @@ Pick top 5000 most frequently occurring words in the corpus as signature.
  ('govt_40', 3243.128928928771),
  ('weather_40', 3267.9365365363774),
  ('econ_40', 3275.4096096094536)]
- The best pretrained embedding is econ_40.
+ The best pretrained embedding is movies_40.
  ```
  
 
