@@ -14,8 +14,7 @@ To do that, run the following command:
 ```
 dw configure
 ```
-Your API token can be obtained on data.world under [Settings > Advanced]
-(https://data.world/settings/advanced )
+Your API token can be obtained on data.world under [Settings > Advanced](https://data.world/settings/advanced)
 
 ### Check embeddings
 
@@ -67,8 +66,8 @@ Word embedding has been successfully downloaded.
 Check the vector attribute by using embedding_name.vector
 ```
 ### Embedding selection
-The `method_a(inp_dir,num_sig,num_sig_embedding,num_stopwords)` is an embedding selection method based on this [paper].
-(https://arxiv.org/pdf/1507.05523.pdf).We are assuming that word embeddings with similar high frequency words are built from similar topics corpor.
+The `method_a(inp_dir,num_sig,num_sig_embedding,num_stopwords)` is an embedding selection method based on this [paper](https://arxiv.org/pdf/1507.05523.pdf).
+We are assuming that word embeddings with similar high frequency words are built from similar topics corpor.
 `inp_dir` is the path of input corpora.`num_sig` means the number of words chosen as signature of the input corpora. `num_sig_embedding` indicates the number of words picked as signature of the pretrained embedding. And`num_stopwords` is the number of stopwords we ignore in this method.
 For example
 ```python
