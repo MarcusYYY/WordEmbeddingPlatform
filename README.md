@@ -16,6 +16,15 @@ dw configure
 ```
 Your API token can be obtained on data.world under [Settings > Advanced](https://data.world/settings/advanced)
 
+### Quick start
+
+Once you have finished all steps above. You may want to add the `Embedding_platform` folder in your working directory. It contains 4 python files and 1 folder named Test_input in which has a test raw text corpus.There are a lot of existing python packages used here therefore you might have problems if you haven't download them all. You are able to check all necessary packages at `install_requires` in `setup.py` which is under the root directory. With all problems solved, the only thing you need to do is to import `Embedding_platform.py` in your script. Just make sure `info.py` is in the same directory.
+
+For example:
+```python
+>>> import Embedding_platform as ep
+```
+
 ### Check embeddings
 
 The broker file,which is at data.world,contains all meta data of available pretrained word embeddings.
@@ -52,7 +61,7 @@ The `EmbedExtract(file_dir,table,pad,check,download)` method aims to extract ove
 
 For example:
 ```python
->>>ep.EmbedExtract(file_dir ='/Users/Desktop/input_corpora' ,table ='agriculture_40',pad = True,check = True,download = True)
+>>>ep.EmbedExtract(file_dir ='Test_Input/reutersR8_all' ,table ='agriculture_40',pad = True,check = True,download = True)
 ```
 ### Embedding initiation and download
 
@@ -78,7 +87,7 @@ We are assuming that word embeddings with similar high frequency words are built
 
 For example:
 ```python
->>>INPUT_DIR = '/Users/Example_corpora'
+>>>INPUT_DIR = 'Test_Input/reutersR8_all'
 >>>ep.method_a(inp_dir = INPUT_DIR,num_sig = 5000,num_sig_embedding = 5000,num_stopwords = 100)
 100 most frequent words will be removed as stop words.
 Pick up 5000 top frequent words as signature of all avaliable embeddings.
