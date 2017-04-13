@@ -4,7 +4,7 @@ import Embedding_platform as ep
 ep.check()
 
 # Query for a specified word in specfied embedding.
-print ep.query_embeddings('agriculture_40','you')
+print ep.query_embeddings('arts_40','you')
 print ep.query_embeddings('agriculture_40','the')		
 
 # Extracted necessary parts of pre_trained embeddings for given corpus input. 
