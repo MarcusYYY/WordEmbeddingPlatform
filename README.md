@@ -14,14 +14,14 @@ To do that, run the following command:
 ```
 dw configure
 ```
-Your API token can be obtained on data.world under [Settings > Advanced]
-(https://data.world/settings/advanced )
+Your API token can be obtained on data.world under [Settings > Advanced](https://data.world/settings/advanced)
 
 ### Check embeddings
 
 The broker file,which is at data.world,contains all meta data of available pretrained word embeddings.
 For now, there are 8 pretrained embeddings avaiable, we will update it if more pretrained word embeddings are created.
 The `check()`  method facilitates showing info of current word embeddings.
+
 For example:
 ```python
 >>>import Embedding_platform as ep
@@ -37,7 +37,8 @@ We only use one embedding to illustrate the broker file structure.
 
 ### Query embeddings
 The `query_embeddings(table,world)` method provides users a convenient way to query the word embedding for specified table and word.
-For example
+
+For example:
 ```python
 >>>print ep.query_embeddings('agriculture_40','the')
 ['the', -1.004704, 0.037287, -0.016309, -0.088428, -1.1478, 0.331032, -0.77213, -0.07757, -0.874058, 
@@ -48,12 +49,14 @@ For example
 ```
 ### Embedding extraction
 The `EmbedExtract(file_dir,table,pad,check,download)` method aims to extract overlap word vectors in the pretrained embeddings given raw text input.Argument `file_dir` is the absoulte path of text input, `table` is the name of embeddings stored on data.world. If `pad = True` ,the method will add those words which do not appear in the embedding but exist in raw input. If `check = True`, it means the results of the extracted embedding will be shown on the screen and the lib will download the extracted embedding if `download = True`.
-For example
+
+For example:
 ```python
 >>>ep.EmbedExtract(file_dir ='/Users/Desktop/input_corpora' ,table ='agriculture_40',pad = True,check = True,download = True)
 ```
 ### Embedding initiation and download
-For example
+
+For example:
 ```python
 >>>A = ep.embedding('agriculture_40',100)
 The embedding you are looking for exists. The url is https://query.data.world/s/enfkzx0yrnxevzcy9m7fm81hi
@@ -67,11 +70,15 @@ Word embedding has been successfully downloaded.
 Check the vector attribute by using embedding_name.vector
 ```
 ### Embedding selection
-The `method_a(inp_dir,num_sig,num_sig_embedding,num_stopwords)` is an embedding selection method based on[.......].
+The `method_a(inp_dir,num_sig,num_sig_embedding,num_stopwords)` is an embedding selection method based on this [paper](https://arxiv.org/pdf/1507.05523.pdf).
+
+We are assuming that word embeddings with similar high frequency words are built from similar topics corpor. The score this method computed is negatively correlated with the performance of those pretrained word emebddings.Therefore the emebdding with the least score outperforms the others.
+
 `inp_dir` is the path of input corpora.`num_sig` means the number of words chosen as signature of the input corpora. `num_sig_embedding` indicates the number of words picked as signature of the pretrained embedding. And`num_stopwords` is the number of stopwords we ignore in this method.
-For example
+
+For example:
 ```python
->>>INPUT_DIR = '/Users/Marcus/Desktop/Archive/Maas_IMDB'
+>>>INPUT_DIR = '/Users/Example_corpora'
 >>>ep.method_a(inp_dir = INPUT_DIR,num_sig = 5000,num_sig_embedding = 5000,num_stopwords = 100)
 100 most frequent words will be removed as stop words.
 Pick up 5000 top frequent words as signature of all avaliable embeddings.
@@ -92,7 +99,7 @@ Pick top 5000 most frequently occurring words in the corpus as signature.
  ('govt_40', 3243.128928928771),
  ('weather_40', 3267.9365365363774),
  ('econ_40', 3275.4096096094536)]
- The best pretrained embedding is econ_40.
+ The best pretrained embedding is movies_40.
  ```
  
 
